@@ -2,6 +2,8 @@ package com.example.demo;
 
 import com.csvreader.CsvWriter;
 import com.example.demo.dao.NeInfoDao;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -117,5 +120,46 @@ public class test1 {
 
         }
         csvWriter.close();
+    }
+
+    private final static String NEW_LINE_SEPARATOR="\n";
+    @Test
+    public void  apachCsvTest() throws IOException {
+        HashMap<String, Object> userInfo = new HashMap<>();
+        userInfo.put("USERID","001");
+        userInfo.put("COUNTRYCODE","001");
+        userInfo.put("CITYCODE","002");
+        userInfo.put("OPERATORCODE","003");
+        userInfo.put("type","view");
+
+        HashMap<String, Double> coor = new HashMap<>();
+        coor.put("coorXMin",75.6);
+        coor.put("coorXMax",85.6);
+        coor.put("coorYMin",75.7);
+        coor.put("coorYMax",95.7);
+        userInfo.put("coor",coor);
+
+        List<Map<String, Object>> userNeList = neInfoDao.getUserNeList(userInfo);
+        String[] headers = {"CountryCode","CityCode","OperatorCode","NeName","NeType","COOR_X","COOR_Y"};
+
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
+        FileWriter fileWriter = new FileWriter("e:/UserInfo1.csv");
+        CSVPrinter csvPrinter = new CSVPrinter(fileWriter, csvFormat);
+        csvPrinter.printRecord(headers);
+
+        for (int i = 0; i < userNeList.size(); i++) {
+            Map<String, Object> Map = userNeList.get(i);
+            Object[] thisline ={Map.get("COUNTRYCODE"),
+                    Map.get("CITYCODE"),
+                    Map.get("OPERATORCODE"),
+                    Map.get("NENAME"),
+                    Map.get("NETYPE"),
+                    Map.get("COOR_X"),
+                    Map.get("COOR_Y")
+            };
+            csvPrinter.printRecord(thisline);
+        }
+        csvPrinter.close();
+
     }
 }
