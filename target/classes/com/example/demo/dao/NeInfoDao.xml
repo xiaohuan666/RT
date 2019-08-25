@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.dao.NeInfoDao">
+    <select id="getUserNeList" resultType="java.util.Map">
+        select * from ne_info n
+        where    n.USERID = #{USERID}
+        AND n.COUNTRYCODE = #{COUNTRYCODE}
+        AND n.CITYCODE = #{CITYCODE}
+        AND n.OPERATORCODE = #{OPERATORCODE}
+	    <if test="type=='view'">
+            and  n.COOR_X &lt;= #{coor.coorXMax}
+            and  n.COOR_X &gt;= #{coor.coorXMin}
+            and  n.COOR_Y &lt;= #{coor.coorYMax}
+            and  n.COOR_Y &gt;= #{coor.coorYMin}
+        </if>
+    </select>
+
+</mapper>
